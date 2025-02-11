@@ -1,6 +1,6 @@
 import { useState } from "react";
 import "./App.scss";
-import Button from "./components/button";
+import Button from "./components/Button";
 
 const initialList = new Array(9).fill("");
 function App() {
@@ -8,19 +8,21 @@ function App() {
   const [listOfValue, setListOfValue] = useState(initialList);
   const [numMoveLeft, setNumMoveLeft] = useState(9);
   const [hasWinner, setHasWinner] = useState(null);
+  const [winningLine, setWinningLine] = useState([]);
 
   function handleUserClick(index) {
-    const nextValue = value === "x" ? "o" : "x";
+    let nextValue = value === "x" ? "o" : "x";
     if (listOfValue[index] === "" && !hasWinner) {
       const newDataList = [...listOfValue];
       newDataList[index] = nextValue;
       setListOfValue(newDataList);
       setNumMoveLeft(numMoveLeft - 1);
       setValue(nextValue);
-      const winner = checkWinner(newDataList);
+      const [winner, theWinningLine] = checkWinner(newDataList);
       console.log(winner);
       if (winner) {
         setHasWinner(winner);
+        setWinningLine(theWinningLine);
       }
     }
   }
@@ -33,10 +35,22 @@ function App() {
             value={item}
             key={index}
             onUserClick={() => handleUserClick(index)}
+            isHighlighted={winningLine.includes(index)}
           />
         ))}
       </div>
-      <div>{hasWinner ? <p>Winner is: {hasWinner}</p> : undefined}</div>
+      <div>
+        {hasWinner ? (
+          <p className="board__winner-message">Winner is: {hasWinner}</p>
+        ) : numMoveLeft === 0 ? (
+          <p className="board__winner-message">It is a draw</p>
+        ) : undefined}
+      </div>
+      <div>
+        {!hasWinner && numMoveLeft !== 0 ? (
+          <p className="board__winner-message">{value} next</p>
+        ) : undefined}
+      </div>
     </div>
   );
 }
@@ -57,7 +71,7 @@ function checkWinner(data) {
   for (let line of winLines) {
     const [a, b, c] = line;
     if (data[a] && data[a] === data[b] && data[a] === data[c]) {
-      return data[a];
+      return [data[a], line];
     }
   }
   return null;

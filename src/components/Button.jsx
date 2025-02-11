@@ -1,6 +1,9 @@
-export default function Button({ value, onUserClick }) {
+export default function Button({ value, onUserClick, isHighlighted }) {
   return (
-    <div className="board__square" onClick={onUserClick}>
+    <div
+      className={isHighlighted ? "board__square highlighted" : "board__square"}
+      onClick={onUserClick}
+    >
       {value}
     </div>
   );
